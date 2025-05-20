@@ -21,3 +21,29 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+//Login User || signin
+
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User Not Found" });
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(404).json({ message: "Invalid Password" });
+    }
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    user.token = token;
+    await user.save();
+    res
+      .status(200)
+      .json({ message: "User LoggedIn Successfully", token: token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
