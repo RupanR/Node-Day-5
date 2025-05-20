@@ -9,10 +9,10 @@ dotenv.config();
 
 export const registerUser = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { username, email, password } = req.body;
     const hashPassword = await bcrypt.hash(password, 10);
     //console.log(hashPassword);
-    const newUser = new User({ username, email, password: hashPassword, role });
+    const newUser = new User({ username, email, password: hashPassword });
     await newUser.save();
     res
       .status(200)
@@ -48,16 +48,13 @@ export const loginUser = async (req, res) => {
   }
 };
 
-
 //get User
 
-export const getUser = async(req,res)=>{
+export const getUser = async (req, res) => {
   try {
-    
     const user = await User.find();
-    res.status(200).json({message:"Authorized User",data:user})
-
+    res.status(200).json({ message: "Admin User", data: user });
   } catch (error) {
-     res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
-}
+};
